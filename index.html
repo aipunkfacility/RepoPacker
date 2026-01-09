@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RepoPacker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- JSZip нужен глобально, так как у него нет ES-модуля на CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .drag-active { border-color: #3b82f6 !important; background-color: #1e293b !important; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-4 md:p-8">
+
+    <header class="mb-10 text-center max-w-2xl">
+        <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400 mb-4">
+            RepoPacker
+        </h1>
+        <p class="text-slate-400 text-lg">
+            Превратите ZIP-архив репозитория GitHub в единый текстовый файл.
+        </p>
+    </header>
+
+    <main class="w-full max-w-xl bg-slate-800/30 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6 md:p-8 shadow-2xl">
+        
+        <!-- Сцена 1: Загрузка -->
+        <div id="scene-upload" class="space-y-6">
+            <div class="w-full">
+                <label id="dropZone" class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-slate-600 rounded-lg cursor-pointer bg-slate-800 hover:bg-slate-750 hover:border-blue-500 transition-all duration-300">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6 pointer-events-none">
+                        <svg class="w-12 h-12 mb-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <p class="mb-2 text-sm text-slate-300">
+                            <span class="font-semibold">Выберите</span> или перетащите ZIP файл
+                        </p>
+                    </div>
+                    <input type="file" id="fileInput" class="hidden" accept=".zip" />
+                </label>
+            </div>
+        </div>
+
+        <!-- Сцена 2: Процесс -->
+        <div id="scene-processing" class="hidden py-10 flex flex-col items-center">
+            <div class="w-full bg-slate-700 rounded-full h-2.5 mb-6 overflow-hidden">
+                <div id="progressBar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+            </div>
+            <p id="statusMessage" class="mt-4 text-lg font-medium text-slate-200">Подготовка...</p>
+        </div>
+
+        <!-- Сцена 3: Готово -->
+        <div id="scene-completed" class="hidden text-center space-y-6 animate-fade-in">
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-2">Готово!</h2>
+                <p class="text-slate-400 mb-1">Файл <strong id="resultFileName">result.md</strong> создан.</p>
+                <div class="flex justify-center gap-4 text-sm text-slate-500 mt-2">
+                    <span id="resultFileCount">📄 0 файлов</span>
+                    <span id="resultTotalSize">📦 0 KB</span>
+                </div>
+            </div>
+            <a id="downloadBtn" href="#" download="" class="flex items-center justify-center space-x-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-4 rounded-xl transition-all shadow-lg hover:shadow-blue-500/25">
+                <span>Скачать Markdown</span>
+            </a>
+            <button id="resetBtn" class="text-slate-500 hover:text-slate-300 text-sm underline decoration-slate-600 hover:decoration-slate-400 underline-offset-4">
+                Загрузить другой
+            </button>
+        </div>
+
+        <!-- Сцена 4: Ошибка -->
+        <div id="scene-error" class="hidden text-center py-6">
+            <div class="bg-red-500/10 text-red-400 p-4 rounded-lg mb-6 flex items-center justify-center flex-col">
+                <p id="errorMessage">Ошибка</p>
+            </div>
+            <button id="retryBtn" class="px-6 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors text-white font-medium">
+                Попробовать снова
+            </button>
+        </div>
+
+    </main>
+
+    <!-- ПОДКЛЮЧАЕМ СКРИПТЫ КАК МОДУЛЬ -->
+    <script type="module" src="./js/main.js"></script>
+</body>
+</html>
